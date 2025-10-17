@@ -3,58 +3,54 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Interactive Video - Player</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Interactive Video — Player</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header class="topbar">
-    <h1>Interactive Video — Player</h1>
-    <nav>
-      <a href="admin.html">Admin</a>
-      <a href="parents.html">Parents</a>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <header class="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 shadow">
+    <h1 class="text-xl font-semibold">🎥 Interactive Video — Player</h1>
+    <nav class="space-x-4">
+      <a href="admin.html" class="text-blue-600 dark:text-blue-400 hover:underline">Admin</a>
+      <a href="parents.html" class="text-blue-600 dark:text-blue-400 hover:underline">Parents</a>
     </nav>
   </header>
 
-  <main class="container">
-    <section class="setup card">
-      <label>
-        Student name:
-        <input id="studentName" placeholder="Enter name (will be saved)" />
+  <main class="max-w-4xl mx-auto p-6 space-y-6">
+    <!-- Setup -->
+    <section class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow">
+      <label class="block mb-2">Student Name:
+        <input id="studentName" class="border rounded px-3 py-2 w-full mt-1 dark:bg-gray-700" placeholder="Enter name" />
       </label>
-      <button id="startBtn">Load Project & Start</button>
-      <select id="projectSelect"></select>
+      <div class="flex gap-3 items-center">
+        <select id="projectSelect" class="border rounded px-3 py-2 flex-1 dark:bg-gray-700"></select>
+        <button id="startBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Load Project & Start</button>
+      </div>
     </section>
 
-    <section class="player card hidden" id="playerArea">
-      <div class="video-wrap">
-        <!-- video element or youtube iframe will be inserted here -->
-        <div id="videoContainer"></div>
-      </div>
-
-      <div class="controls">
-        <button id="revisitBtn">Revisit Skipped Interactions</button>
-        <div id="status">Status: waiting</div>
+    <!-- Player -->
+    <section id="playerArea" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 shadow space-y-4">
+      <div id="videoContainer" class="bg-black rounded-lg overflow-hidden flex items-center justify-center min-h-[280px]"></div>
+      <div class="flex justify-between items-center">
+        <button id="revisitBtn" class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 rounded">Revisit Skipped</button>
+        <span id="status" class="text-sm text-gray-600 dark:text-gray-400">Status: waiting</span>
       </div>
     </section>
   </main>
 
-  <!-- Interaction modal -->
-  <div id="interactionModal" class="modal hidden">
-    <div class="modal-content">
-      <div id="interactionContent"></div>
-      <div class="modal-actions">
-        <button id="hintBtn" class="secondary">Hint</button>
-        <button id="checkBtn">Check Answer</button>
-        <button id="skipBtn" class="secondary">Skip</button>
+  <!-- Modal -->
+  <div id="interactionModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-lg">
+      <div id="interactionContent" class="space-y-3"></div>
+      <div class="flex justify-end gap-3 mt-4">
+        <button id="hintBtn" class="border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 px-3 py-2 rounded">Hint</button>
+        <button id="checkBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded">Check</button>
+        <button id="skipBtn" class="border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 px-3 py-2 rounded">Skip</button>
       </div>
-      <div id="feedback" class="feedback"></div>
+      <div id="feedback" class="text-sm font-medium text-red-600 mt-3"></div>
     </div>
   </div>
 
+  <script>window.__PAGE = 'player';</script>
   <script src="script.js"></script>
-  <script>
-    // Mark this page type so script.js knows what to initialise
-    window.__PAGE = 'player';
-  </script>
 </body>
 </html>
