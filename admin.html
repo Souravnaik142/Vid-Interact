@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Video - Admin</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Interactive Video — Admin Editor</h1>
+    <nav>
+      <a href="index.html">Player</a>
+      <a href="parents.html">Parents</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Create / Select Project</h2>
+      <div class="row">
+        <input id="projName" placeholder="Project name (e.g., Math Lesson 1)" />
+        <button id="createProj">Create Project</button>
+      </div>
+      <div class="row">
+        <select id="projSelectAdmin"></select>
+        <button id="loadProj">Load</button>
+        <button id="deleteProj" class="danger">Delete</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Video Source</h2>
+      <label>Upload local video (mp4/webm):
+        <input type="file" id="localVideoInput" accept="video/*" />
+      </label>
+      <label>Or YouTube URL:
+        <input id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." />
+      </label>
+      <button id="saveVideo">Save Video Source</button>
+      <div id="videoPreview"></div>
+    </section>
+
+    <section class="card">
+      <h2>Interactions</h2>
+      <div>
+        <label>Timestamp (mm:ss or seconds):
+          <input id="timestamp" placeholder="00:10 or 10" />
+        </label>
+        <label>Type:
+          <select id="qType">
+            <option value="mcq">Multiple Choice (4)</option>
+            <option value="fill">Fill in the Blanks</option>
+            <option value="tf">True / False</option>
+            <option value="match">Match the Following</option>
+            <option value="colour">Colour the Diagram (PNG/JPG hotspots)</option>
+          </select>
+        </label>
+        <label>Hint (optional):
+          <input id="hintText" placeholder="Hint text for fill-in or MCQ" />
+        </label>
+        <div id="extraFields"></div>
+        <button id="addInteraction">Add Interaction</button>
+      </div>
+
+      <h3>Existing Interactions</h3>
+      <ul id="interactionList" class="interaction-list"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Project Actions</h2>
+      <button id="exportProj">Export JSON</button>
+      <button id="importProj">Import JSON</button>
+      <input id="importFile" type="file" accept="application/json" />
+    </section>
+  </main>
+
+  <template id="mcqTemplate">
+    <div>
+      <label>Question text: <input id="qText" /></label>
+      <div>
+        <label>Option A: <input class="opt" data-i="0" /></label>
+        <label>Option B: <input class="opt" data-i="1" /></label>
+        <label>Option C: <input class="opt" data-i="2" /></label>
+        <label>Option D: <input class="opt" data-i="3" /></label>
+      </div>
+      <label>Correct option index (0-3): <input id="correctIdx" type="number" min="0" max="3" /></label>
+    </div>
+  </template>
+
+  <template id="fillTemplate">
+    <div>
+      <label>Prompt / sentence with blank: <input id="qText" /></label>
+      <label>Correct answer (single word or phrase): <input id="correctAnswer" /></label>
+    </div>
+  </template>
+
+  <template id="tfTemplate">
+    <div>
+      <label>Statement: <input id="qText" /></label>
+      <label>Correct (true/false): 
+        <select id="correctTF"><option value="true">True</option><option value="false">False</option></select>
+      </label>
+    </div>
+  </template>
+
+  <template id="matchTemplate">
+    <div>
+      <label>Left items (comma separated): <input id="leftItems" placeholder="A,B,C" /></label>
+      <label>Right items (comma separated matching order): <input id="rightItems" placeholder="1,2,3" /></label>
+    </div>
+  </template>
+
+  <template id="colourTemplate">
+    <div>
+      <label>Upload diagram (PNG/JPG):
+        <input id="diagramFile" type="file" accept="image/*" />
+      </label>
+      <p>
+        Hotspots (define as percent x,y,width,height). Example: <code>20,10,15,20; 60,30,20,15</code>
+      </p>
+      <label>Hotspot coords (semicolon separated): <input id="hotspots" placeholder="x,y,w,h; x2,y2,w2,h2" /></label>
+      <label>Colors for hotspots (semicolon separated): <input id="hotspotColors" placeholder="#ff0000; green" /></label>
+    </div>
+  </template>
+
+  <script src="script.js"></script>
+  <script>
+    window.__PAGE = 'admin';
+  </script>
+</body>
+</html>
