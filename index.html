@@ -1,136 +1,108 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Interactive Video Player — Admin Editor</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Video Player</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Interactive Video Player</h1>
-    <div class="controls">
-      <label><input id="adminToggle" type="checkbox"> Admin Mode</label>
+  <div class="container">
+    <h2>Interactive Video Player</h2>
+
+    <div class="video-controls">
+      <label>Local video:
+        <input type="file" id="localVideo" accept="video/*" />
+      </label>
+
+      <label>YouTube URL:
+        <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." />
+      </label>
+      <button id="loadYoutube">Load YouTube</button>
+
+      <label class="admin-toggle">
+        <input type="checkbox" id="adminMode" />
+        Admin Mode
+      </label>
+
       <button id="exportCsv">Export Attempts (CSV)</button>
-      <input id="parentEmail" placeholder="Parent email (optional)" />
+      <input type="email" id="parentEmail" placeholder="Parent email (optional)" />
     </div>
-  </header>
 
-  <main>
-    <section class="video-area">
-      <div class="video-source">
-        <label>Local video:
-          <input type="file" id="fileInput" accept="video/*" />
-        </label>
-        <label>YouTube URL:
-          <input id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." />
-          <button id="loadYt">Load YouTube</button>
-        </label>
-      </div>
+    <div class="video-wrapper">
+      <video id="videoPlayer" controls></video>
+    </div>
 
-      <div id="playerWrap">
-        <!-- HTML5 video -->
-        <video id="video" controls preload="metadata"></video>
+    <p>Current time: <span id="currentTime">0.00s</span></p>
 
-        <!-- YouTube iframe appears here when used -->
-        <div id="ytPlayer" style="display:none;"></div>
-      </div>
-
-      <div class="timeline-info">
-        <span>Current time: <b id="curTime">0.00</b>s</span>
-      </div>
-    </section>
-
-    <aside class="editor" id="editor">
-      <h2>Interactions (Admin)</h2>
-      <div class="add-controls">
-        <select id="interactionType">
-          <option value="mcq">Multiple Choice (4)</option>
-          <option value="fill">Fill in the blank</option>
-          <option value="tf">True / False</option>
-          <option value="match">Match the following</option>
-          <option value="color">Colour the diagram</option>
-        </select>
-        <input id="timestamp" type="number" min="0" step="0.1" placeholder="time in seconds" />
+    <!-- Admin Section -->
+    <div id="adminPanel" class="admin-panel hidden">
+      <h3>Add Interactions (All Types)</h3>
+      <div class="admin-controls">
+        <input type="number" id="interactionTime" placeholder="time in seconds" />
         <button id="useCurrentTime">Use current time</button>
-        <button id="addInteraction">Add Interaction</button>
+        <button id="addAllInteractions">Add All Interactions</button>
       </div>
 
-      <ul id="interactionsList"></ul>
-    </aside>
-  </main>
+      <div id="allInteractionsForm" class="scroll-area">
+        <!-- MCQ -->
+        <div class="form-section">
+          <h4>Multiple Choice (4)</h4>
+          <input type="text" id="mcqQuestion" placeholder="Question text" />
+          <input type="text" id="mcqA" placeholder="Option A" />
+          <input type="text" id="mcqB" placeholder="Option B" />
+          <input type="text" id="mcqC" placeholder="Option C" />
+          <input type="text" id="mcqD" placeholder="Option D" />
+          <input type="text" id="mcqAnswer" placeholder="Correct answer (A/B/C/D)" />
+        </div>
 
-  <!-- Interaction overlay -->
-  <div id="interactionOverlay" class="hidden">
-    <div class="overlay-card">
+        <!-- Fill -->
+        <div class="form-section">
+          <h4>Fill in the Blank</h4>
+          <input type="text" id="fillQuestion" placeholder="Sentence with ____ blank" />
+          <input type="text" id="fillAnswer" placeholder="Correct answer" />
+          <input type="text" id="fillHint" placeholder="Hint (optional)" />
+        </div>
+
+        <!-- True/False -->
+        <div class="form-section">
+          <h4>True / False</h4>
+          <input type="text" id="tfQuestion" placeholder="Question text" />
+          <select id="tfAnswer">
+            <option value="true">True</option>
+            <option value="false">False</option>
+          </select>
+        </div>
+
+        <!-- Match -->
+        <div class="form-section">
+          <h4>Match the Following</h4>
+          <textarea id="matchPairs" placeholder="Format: Apple - Fruit&#10;Car - Vehicle"></textarea>
+        </div>
+
+        <!-- Colour -->
+        <div class="form-section">
+          <h4>Colour the Diagram</h4>
+          <input type="text" id="colorTitle" placeholder="Diagram title (e.g., Parts of Computer)" />
+          <input type="text" id="colorHint" placeholder="Hint (e.g., Color CPU gray)" />
+        </div>
+      </div>
+
+      <ul id="interactionList"></ul>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div id="overlay" class="overlay hidden">
+    <div id="popup" class="popup">
       <div id="interactionContent"></div>
-      <div class="overlay-actions">
+      <div class="popup-buttons">
         <button id="skipBtn">Skip</button>
         <button id="checkBtn">Check Answers</button>
       </div>
     </div>
   </div>
 
-  <!-- Modals / hidden templates -->
-  <template id="mcqTemplate">
-    <div class="interaction mcq">
-      <h3 contenteditable="true" class="qTitle">Type your question...</h3>
-      <div class="options">
-        <label><input type="radio" name="opt" value="0"><span contenteditable="true">Option 1</span></label>
-        <label><input type="radio" name="opt" value="1"><span contenteditable="true">Option 2</span></label>
-        <label><input type="radio" name="opt" value="2"><span contenteditable="true">Option 3</span></label>
-        <label><input type="radio" name="opt" value="3"><span contenteditable="true">Option 4</span></label>
-      </div>
-      <div>
-        Correct answer index: <input class="correctIndex" type="number" min="0" max="3" value="0" />
-      </div>
-    </div>
-  </template>
-
-  <template id="fillTemplate">
-    <div class="interaction fill">
-      <h3 contenteditable="true" class="qTitle">Fill-in-the-blank question...</h3>
-      <div>
-        Answer: <input class="fillAnswer" placeholder="expected answer" />
-        Hint: <input class="fillHint" placeholder="hint shown to student" />
-      </div>
-    </div>
-  </template>
-
-  <template id="tfTemplate">
-    <div class="interaction tf">
-      <h3 contenteditable="true" class="qTitle">True or False?</h3>
-      <div>
-        Correct: <select class="tfAnswer"><option value="true">True</option><option value="false">False</option></select>
-      </div>
-    </div>
-  </template>
-
-  <template id="matchTemplate">
-    <div class="interaction match">
-      <h3 contenteditable="true" class="qTitle">Match the following (left → right)</h3>
-      <div class="pairs">
-        <div class="lefts" contenteditable="true">A1<br>A2<br>A3</div>
-        <div class="rights" contenteditable="true">B1<br>B2<br>B3</div>
-      </div>
-      <div>
-        <small>Edit left and right columns separated by line breaks. When shown, students will drag to match (simple UI).</small>
-      </div>
-    </div>
-  </template>
-
-  <template id="colorTemplate">
-    <div class="interaction color">
-      <h3 contenteditable="true" class="qTitle">Colour the diagram</h3>
-      <div>
-        <p>Clickable spots will be shown; students pick colors for labeled spots.</p>
-        <div class="color-spots" contenteditable="true">spot1,spot2</div>
-      </div>
-    </div>
-  </template>
-
   <script src="script.js"></script>
-  <!-- Load YouTube API (used only if user loads a YT url) -->
-  <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
